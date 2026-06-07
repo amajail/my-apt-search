@@ -46,7 +46,8 @@ Handoff note so we can pick this up fresh and **iterate one step at a time**
 | sources/zonaprop.md | `specs/002-…/plan.md` + `research.md` (scraping/anti-bot) |
 
 ## Step-by-step (one per session)
-1. [ ] `/speckit.constitution` — fill from the 5 invariants above. Review.
+1. [x] `/speckit.constitution` — DONE: `.specify/memory/constitution.md` v1.0.0
+       (5 principles + tech constraints + workflow). Review when back.
 2. [ ] `/speckit.specify` — P1 "Villa Urquiza daily monitor via MercadoLibre"
        (tech-agnostic: user stories, FR-xxx, key entities, SC-xxx). Review.
 3. [ ] `/speckit.plan` — P1 stack (Python, Azure Functions, Table Storage),
