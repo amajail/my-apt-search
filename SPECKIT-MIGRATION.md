@@ -51,8 +51,9 @@ Handoff note so we can pick this up fresh and **iterate one step at a time**
 2. [x] `/speckit.specify` — DONE: `specs/001-villa-urquiza-monitor/spec.md`
        (3 user stories P1/P2/P3, FR-001..011, key entities, SC-001..006).
        Quality checklist passes. Review when back.
-3. [ ] `/speckit.plan` — P1 stack (Python, Azure Functions, Table Storage),
-       architecture, and the `contracts/` Collector interface + common model.
+3. [x] `/speckit.plan` — DONE: `specs/001-villa-urquiza-monitor/plan.md` +
+       research.md, data-model.md, contracts/{collector,api}.md, quickstart.md.
+       Constitution Check passes. `docs/ARCHITECTURE.md` now absorbed here.
 4. [ ] `/speckit.tasks` — P1 task list. Review.
 5. [ ] `/speckit.implement` — build P1 incrementally (core w/ fake adapter first).
 6. [ ] Remove `docs/` once P1 spec+plan absorb it (keep README as index).
