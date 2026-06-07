@@ -1,0 +1,20 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Apartment",
+  "name": "Departamento en Venta en Villa Urquiza, Capital Federal - Argenprop",
+  "description": "2 AMBIENTES A ESTRENAR - AMENITIES - VILLA URQUIZA",
+  "image": "https://www.argenprop.com/static-content/59774861/31fa2af4-2e49-46b1-8255-c301a67631c2.jpg",
+  "numberOfRooms": 2,
+  "numberOfBedrooms": 1,
+  "floorSize": {
+    "@type": "QuantitativeValue",
+    "value": 45,
+    "unitCode": "MTK"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Capital Federal, Argentina",
+    "addressRegion": "Villa Urquiza",
+    "streetAddress": "Pacheco al 2900"
+  }
+}
