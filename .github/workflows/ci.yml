@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Set up Node (for Azurite)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Azurite
+        run: npm install -g azurite
+
+      - name: Start Azurite
+        run: azurite --silent --location /tmp/azurite --skipApiVersionCheck &
+
+      - name: Wait for Azurite (table port)
+        run: |
+          for i in $(seq 1 30); do
+            (exec 3<>/dev/tcp/127.0.0.1/10002) 2>/dev/null && { echo "Azurite up"; exit 0; }
+            sleep 1
+          done
+          echo "Azurite did not start" >&2
+          exit 1
+
+      - name: Install Python dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests (unit + contract + integration)
+        # `python -m` puts the repo root on sys.path so `import src` resolves.
+        # Azurite is up, so the integration tests run (not skip).
+        run: python -m pytest -q

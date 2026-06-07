@@ -53,9 +53,12 @@ the real MercadoLibre code, and vice versa.
 - Each dev works on **short-lived task branches** off it, e.g.
   `001/devB/meli-search`, and opens a **small PR per task or checkpoint** back into the
   feature branch.
-- **Merge gate (CI):** the contract test `tests/contract/test_pipeline_agnostic.py`
-  (T012) and the capability-gap test (T013) MUST pass. If a PR makes the core import an
-  adapter, the build goes red — that's the guardrail for Constitution Principle I.
+- **Merge gate (CI):** `.github/workflows/ci.yml` runs the full suite (unit +
+  contract + Azurite integration) on **every push and PR**. The contract test
+  `tests/contract/test_pipeline_agnostic.py` (T012) and the capability-gap test (T013)
+  MUST pass — if anything makes the core import an adapter, the build goes red. That's
+  the guardrail for Constitution Principle I, enforced even on direct branch pushes.
+  Run locally before pushing: start Azurite (`azurite --silent &`) then `python -m pytest -q`.
 - Keep PRs small; rebase on the feature branch often to avoid drift.
 - Commit footer: `Co-Authored-By: ...` and reference the task id (e.g. `T020`).
 

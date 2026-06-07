@@ -128,7 +128,7 @@ no cross-contamination.
 - [ ] T036 Retry/backoff around ML rate limits + token expiry in `src/collectors/mercadolibre.py`
 - [ ] T037 [P] Update `README.md` run/deploy notes; execute `quickstart.md` scenarios A–C
 - [ ] T038 Fold remaining `docs/` content into specs and remove `docs/` (migration step 6); keep README as index
-- [ ] T039 [P] CI config to run contract + unit + integration (Azurite) tests
+- [x] T039 [P] CI config to run contract + unit + integration (Azurite) tests
 
 ---
 
