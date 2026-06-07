@@ -57,22 +57,22 @@ drop, one removed → `/api/changes` reports exactly those three events.
 
 ### Tests for User Story 1 (write first, ensure they fail)
 
-- [ ] T012 [P] [US1] Contract test in `tests/contract/test_pipeline_agnostic.py`: `FakeCollector` drives `pipeline.run` end-to-end; assert `src/pipeline` imports no adapter module
-- [ ] T013 [P] [US1] Capability-gap test in `tests/contract/test_capability_gap.py`: `FakeCollector` with `provides_visits=False`, `provides_listing_age=False` → null visits, `first_seen`-based aging, no error
-- [ ] T014 [P] [US1] Diff unit tests in `tests/unit/test_diff.py`: new / price-change / removed (absent-1-run) / relisted, idempotent re-run, and **no removals when the fetch failed/partial** (FR-008)
-- [ ] T015 [P] [US1] Integration two-day diff in `tests/integration/test_two_day_diff.py` (Azurite): day-1 snapshot → day-2 (1 new, 1 price drop, 1 removed) yields exactly 3 events; re-run day-2 yields none
-- [ ] T016 [P] [US1] API contract test in `tests/contract/test_api_changes.py`: `GET /api/changes` matches `contracts/api.md` shape
+- [x] T012 [P] [US1] Contract test in `tests/contract/test_pipeline_agnostic.py`: `FakeCollector` drives `pipeline.run` end-to-end; assert `src/pipeline` imports no adapter module
+- [x] T013 [P] [US1] Capability-gap test in `tests/contract/test_capability_gap.py`: `FakeCollector` with `provides_visits=False`, `provides_listing_age=False` → null visits, `first_seen`-based aging, no error
+- [x] T014 [P] [US1] Diff unit tests in `tests/unit/test_diff.py`: new / price-change / removed (absent-1-run) / relisted, idempotent re-run, and **no removals when the fetch failed/partial** (FR-008)
+- [x] T015 [P] [US1] Integration two-day diff in `tests/integration/test_two_day_diff.py` (Azurite): day-1 snapshot → day-2 (1 new, 1 price drop, 1 removed) yields exactly 3 events; re-run day-2 yields none
+- [x] T016 [P] [US1] API contract test in `tests/contract/test_api_changes.py`: `GET /api/changes` matches `contracts/api.md` shape
 
 ### Implementation for User Story 1
 
-- [ ] T017 [US1] Diff logic in `src/pipeline/diff.py`: snapshot vs stored → `[ChangeEvent]`; removal on absent-from-successful-run OR status closed/paused; relisted on reappearance (data-model state machine)
-- [ ] T018 [US1] Pipeline orchestration in `src/pipeline/run.py`: resolve collector → `search` → `get_item` → diff → persist; **skip removal processing if the collector raised/returned partial** (FR-008)
+- [x] T017 [US1] Diff logic in `src/pipeline/diff.py`: snapshot vs stored → `[ChangeEvent]`; removal on absent-from-successful-run OR status closed/paused; relisted on reappearance (data-model state machine)
+- [x] T018 [US1] Pipeline orchestration in `src/pipeline/run.py`: resolve collector → `search` → `get_item` → diff → persist; **skip removal processing if the collector raised/returned partial** (FR-008)
 - [ ] T019 [US1] MercadoLibre OAuth (client-credentials + token refresh) in `src/collectors/mercadolibre.py`
 - [ ] T020 [US1] MercadoLibre `search` in `src/collectors/mercadolibre.py`: USD-only, exactly 2 ambientes, covered area > 40 m², price ≤ 115000 USD, barrio location IDs, paging (depends T019)
 - [ ] T021 [US1] MercadoLibre `get_item` → `Listing` in `src/collectors/mercadolibre.py`: `permalink`→url, `status`→removal signal, price/currency/attrs; register in `registry.py` (depends T020)
-- [ ] T022 [US1] Daily timer trigger in `function_app.py` invoking `pipeline.run` for the Villa Urquiza profile
-- [ ] T023 [US1] `GET /api/changes` HTTP trigger in `function_app.py` reading `get_changes_since`
-- [ ] T024 [US1] Structured logging + error handling around the daily run (run summary: counts of new/changed/removed)
+- [x] T022 [US1] Daily timer trigger in `function_app.py` invoking `pipeline.run` for the Villa Urquiza profile
+- [x] T023 [US1] `GET /api/changes` HTTP trigger in `function_app.py` reading `get_changes_since`
+- [x] T024 [US1] Structured logging + error handling around the daily run (run summary: counts of new/changed/removed)
 
 **Checkpoint**: MVP — a real daily digest works end-to-end and is independently testable.
 
