@@ -36,17 +36,20 @@ Rationale / Alternatives considered**.
 - **Alternatives**: Trusting a source price-history endpoint (doesn't exist / not
   portable).
 
-## 4. Removal confirmation — avoid false positives
+## 4. Removal timing (clarified 2026-06-07: absent-1-run)
 
-- **Decision**: A stored-active listing missing from today's results is **not** removed
-  immediately. Confirm via the source removal signal (MercadoLibre `status` ∈
-  {paused, closed} from the item endpoint); if the signal is unavailable, require the
-  listing to be **absent for 2 consecutive runs** before emitting REMOVED. A run that
-  returns empty/partial data (collector error) skips removal processing entirely.
-- **Rationale**: Satisfies FR-007, FR-008, SC-003, SC-006 — search ranking churn and
-  transient outages must not look like delistings.
-- **Alternatives**: Immediate removal on absence (false positives); status-only (misses
-  hard-deleted listings that 404).
+- **Decision**: After a **successful, complete** run, a stored-active listing that is
+  absent from results, or that the source reports `status` ∈ {paused, closed}, is
+  reported REMOVED that same run (`is_active=false`, `removed_at` set). The safeguard:
+  removal processing runs **only** after a successful fetch — an empty/partial/failed
+  collector response skips removal entirely (no `missed_runs` accumulation needed).
+- **Rationale**: User clarified they want fast removal signals (absent-1-run), accepting
+  some churn-driven false positives in exchange for timeliness. FR-008 still prevents
+  outage-driven mass removals. Satisfies FR-007, FR-008, SC-003, SC-006.
+- **Alternatives**: Absent-2-runs (slower, fewer false positives — rejected by user);
+  status-only (misses hard-deleted/404 listings).
+- **Note**: `Listing.missed_runs` is retained in the model but unused at threshold 1; it
+  stays as a config knob if a future profile wants a higher threshold.
 
 ## 5. MercadoLibre adapter
 
@@ -55,9 +58,10 @@ Rationale / Alternatives considered**.
   `provides_listing_age=true`, `removal_signal=status`.
   - **Auth**: OAuth client-credentials app token; refresh on expiry. Credentials
     (`ML_CLIENT_ID`, `ML_CLIENT_SECRET`) from app settings.
-  - **Search**: query by operation (venta), attributes (rooms, covered area), and
-    **neighborhood location IDs** (Villa Urquiza / Villa Ortúzar / Coghlan), price ≤ USD
-    115,000; page through results.
+  - **Search**: query by operation (venta), **exactly 2 ambientes**, **covered area
+    (superficie cubierta) > 40 m²**, **USD-priced only** with price ≤ USD 115,000, and
+    **neighborhood location IDs** (Villa Urquiza / Villa Ortúzar / Coghlan); page through
+    results. ARS-priced listings are filtered out (no conversion).
   - **Item → model**: `permalink` → `url`; `start_time`/`date_created` →
     `listing_started_at`; `status` → removal signal; price/currency/attributes mapped.
   - **Visits**: `GET /items/{id}/visits/time_window?last=N&unit=day` (+ total) →

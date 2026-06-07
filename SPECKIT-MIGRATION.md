@@ -51,6 +51,9 @@ Handoff note so we can pick this up fresh and **iterate one step at a time**
 2. [x] `/speckit.specify` — DONE: `specs/001-villa-urquiza-monitor/spec.md`
        (3 user stories P1/P2/P3, FR-001..011, key entities, SC-001..006).
        Quality checklist passes. Review when back.
+2b.[x] `/speckit.clarify` — DONE (run after plan): clarified USD-only, exactly-2
+       ambientes, covered-area >40m², removal on absent-1-run. Encoded into spec.md
+       (Clarifications + FR-007/008/012/013) and reconciled into plan research/data-model.
 3. [x] `/speckit.plan` — DONE: `specs/001-villa-urquiza-monitor/plan.md` +
        research.md, data-model.md, contracts/{collector,api}.md, quickstart.md.
        Constitution Check passes. `docs/ARCHITECTURE.md` now absorbed here.

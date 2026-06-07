@@ -8,6 +8,20 @@
 
 **Input**: User description: "Daily monitor for Villa Urquiza apartment listings for sale via MercadoLibre"
 
+## Clarifications
+
+### Session 2026-06-07
+
+- Q: How to handle non-USD (ARS) listings against the USD 115,000 ceiling?
+  → A: **USD only** — track only USD-priced listings; ignore ARS ones (no conversion).
+- Q: "2 ambientes" — exactly 2, or 2+?
+  → A: **Exactly 2**.
+- Q: ">40 m²" refers to which area? → A: **Covered area (superficie cubierta)**.
+- Q: When is a listing reported as REMOVED?
+  → A: **As soon as it is absent from one successful run** (or the source reports it
+  closed/paused). The partial/empty-response safeguard still applies — a failed or
+  empty fetch never marks listings removed.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Daily change digest (Priority: P1)
@@ -84,12 +98,12 @@ tracked and reported independently from the first.
 ### Edge Cases
 
 - **Source temporarily unavailable / partial results**: a run that returns no or
-  partial data MUST NOT mark all previously-tracked listings as removed.
-- **Removal vs. dropped-from-results**: a listing missing from one run is confirmed
-  removed only via the source's removal signal, or after being absent for a small
-  number of consecutive runs.
-- **Currency differences**: prices may be in USD or ARS; a price change is only
-  reported when the amount changes in the same currency.
+  partial data MUST NOT mark any previously-tracked listing as removed (removal is
+  processed only after a successful, complete run).
+- **Removal timing**: after a successful run, a tracked listing absent from results, or
+  reported closed/paused by the source, is reported REMOVED that same run.
+- **Currency**: only USD-priced listings are tracked; ARS-priced listings are ignored.
+  A price change is only reported between two USD amounts.
 - **Duplicate listing within a source**: the same listing seen twice in one run is
   tracked once.
 - **Missing enrichment data**: absent view count or start date leaves those fields
@@ -112,11 +126,15 @@ tracked and reported independently from the first.
   exposes it, and leave it empty otherwise — without failing the run.
 - **FR-006**: Every tracked listing MUST carry a canonical **link (URL)** to the
   listing on its source; a listing without a link MUST NOT be stored or reported.
-- **FR-007**: The system MUST confirm a removal via the source's removal signal, or
-  after a listing is absent for a small number of consecutive runs, before reporting
-  it as removed.
-- **FR-008**: The system MUST tolerate an empty or partial source response without
-  reporting healthy listings as removed.
+- **FR-007**: After a successful run, the system MUST report a tracked listing as
+  removed when it is absent from that run's results OR the source reports it
+  closed/paused.
+- **FR-008**: The system MUST process removals only after a successful, complete source
+  response; an empty or partial/failed response MUST NOT mark any listing as removed.
+- **FR-012**: The system MUST track only **USD-priced** listings; non-USD listings are
+  excluded (no currency conversion).
+- **FR-013**: Profile matching MUST require **exactly 2 ambientes** and **covered area
+  (superficie cubierta) greater than 40 m²**.
 - **FR-009**: The system MUST expose, on demand, (a) the **change digest** for a
   profile since a given date and (b) the **current active listings** for a profile.
 - **FR-010**: A **search profile** MUST define the criteria used to match listings
@@ -142,8 +160,8 @@ tracked and reported independently from the first.
   active matching listings, and every entry has a working link (100%).
 - **SC-002**: In a controlled two-day test (one new, one price drop, one removed), the
   digest reports exactly those three events — no misses, no false positives.
-- **SC-003**: A listing that becomes unavailable is reported as removed within 2 daily
-  runs.
+- **SC-003**: A listing that becomes unavailable is reported as removed on the next
+  successful daily run.
 - **SC-004**: A newly published matching listing appears in the next day's digest
   (within one daily run, subject to source freshness).
 - **SC-005**: Every active listing shows a listing age; listings whose source provides
@@ -153,9 +171,9 @@ tracked and reported independently from the first.
 
 ## Assumptions
 
-- The first profile is **Villa Urquiza**: operation **buy (venta)**, price ceiling
-  **USD 115,000**, **2 rooms (ambientes)**, area **> 40 m²**, neighborhoods **Villa
-  Urquiza + Villa Ortúzar + Coghlan**.
+- The first profile is **Villa Urquiza**: operation **buy (venta)**, **USD-priced
+  only**, price ceiling **USD 115,000**, **exactly 2 ambientes**, **covered area
+  > 40 m²**, neighborhoods **Villa Urquiza + Villa Ortúzar + Coghlan**.
 - The source for this feature is **MercadoLibre**; view counts and listing-start dates
   come from the source and may lag.
 - Single user, personal use; output is consumed as a backend (no UI in this feature).

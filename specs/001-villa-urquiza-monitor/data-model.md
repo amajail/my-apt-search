@@ -12,14 +12,15 @@ Config-defined (YAML); identifies what to match and where.
 | `name` | str | profile id, used as table PartitionKey (e.g. `villa_urquiza`) |
 | `source` | str | registry key selecting the adapter (e.g. `mercadolibre`) |
 | `operation` | enum `venta` \| `alquiler` | `venta` for this feature |
-| `price_max` | int | ceiling, with `currency` |
-| `currency` | enum `USD` \| `ARS` | `USD` for this feature |
-| `rooms` | int | ambientes (e.g. 2) |
-| `min_area_m2` | int | covered area floor (e.g. 40) |
+| `price_max` | int | ceiling, in `currency` |
+| `currency` | enum `USD` \| `ARS` | `USD`; **only listings in this currency are tracked** (no conversion) |
+| `rooms` | int | ambientes — **exact match** (e.g. 2) |
+| `min_area_m2` | int | **covered** area (superficie cubierta) floor, exclusive (e.g. 40 → strictly > 40) |
 | `neighborhoods` | list[str] | resolved source location IDs (+ name comments) |
 
 **Validation**: `name` and `source` required; `source` must exist in the registry;
-`price_max > 0`; `neighborhoods` non-empty.
+`price_max > 0`; `neighborhoods` non-empty. Matching: `currency` exact (USD-only),
+`rooms` exact, covered area strictly greater than `min_area_m2`.
 
 ## Entity: Listing
 
@@ -47,7 +48,7 @@ The tracked unit. Stored in the **Listings** table.
 | `last_seen` | datetime | no | most recent run that saw it |
 | `is_active` | bool | no | false once REMOVED confirmed |
 | `removed_at` | datetime | yes | set when REMOVED |
-| `missed_runs` | int | no | consecutive runs absent (for removal threshold); default 0 |
+| `missed_runs` | int | no | consecutive absent runs; default 0. Removal threshold is 1 (immediate), so this is a retained knob for future profiles wanting a higher threshold |
 | `has_natural_gas` | bool | yes | descriptive only (not for ranking) |
 | `floor` | int | yes | descriptive only |
 | `age_years` | int | yes | building age, descriptive only |
@@ -60,12 +61,16 @@ The tracked unit. Stored in the **Listings** table.
 
 **State transitions**:
 
+Removal is evaluated **only after a successful, complete run** (a failed/empty fetch
+skips these transitions entirely — FR-008). Threshold is absent-1-run (clarified
+2026-06-07).
+
 ```
-(absent)            --seen-->        active (is_active=true, missed_runs=0)
-active              --price differs--> active  + PRICE_CHANGE event
-active              --absent 1 run-->  active  (missed_runs=1)   [no event]
-active              --status closed OR missed_runs>=2--> removed (is_active=false, removed_at set) + REMOVED event
-removed             --seen again-->   active (is_active=true, missed_runs=0) + RELISTED event
+(absent)            --seen-->            active (is_active=true)
+active              --price differs-->   active  + PRICE_CHANGE event
+active              --absent from a successful run OR status closed/paused-->
+                                         removed (is_active=false, removed_at set) + REMOVED event
+removed             --seen again-->      active (is_active=true) + RELISTED event
 ```
 
 ## Entity: ChangeEvent
