@@ -87,15 +87,15 @@ drop, one removed → `/api/changes` reports exactly those three events.
 
 ### Tests for User Story 2 (write first)
 
-- [ ] T025 [P] [US2] API contract test in `tests/contract/test_api_listings.py`: `GET /api/listings` matches `contracts/api.md`
-- [ ] T026 [P] [US2] Integration test in `tests/integration/test_listings_view.py` (Azurite): listings carry `days_listed` and `visits_total`; a no-visits source yields null without error
+- [x] T025 [P] [US2] API contract test in `tests/contract/test_api_listings.py`: `GET /api/listings` matches `contracts/api.md`
+- [x] T026 [P] [US2] Integration test in `tests/integration/test_listings_view.py` (Azurite): listings carry `days_listed` and `visits_total`; a no-visits source yields null without error
 
 ### Implementation for User Story 2
 
 - [ ] T027 [US2] Implement `get_visits` in `src/collectors/mercadolibre.py` (`/items/{id}/visits/time_window`, total + last7) and set `capabilities.provides_visits=True`
-- [ ] T028 [US2] Enrich step in `src/pipeline/run.py`: call `get_visits` per capabilities; compute `days_listed` from `listing_started_at ?? first_seen`
-- [ ] T029 [US2] Persist visits/aging fields via `upsert_listing` in `src/storage/tables.py`
-- [ ] T030 [US2] `GET /api/listings` HTTP trigger in `function_app.py` (with `active` filter)
+- [x] T028 [US2] Enrich step in `src/pipeline/run.py`: call `get_visits` per capabilities; compute `days_listed` from `listing_started_at ?? first_seen`
+- [x] T029 [US2] Persist visits/aging fields via `upsert_listing` in `src/storage/tables.py`
+- [x] T030 [US2] `GET /api/listings` HTTP trigger in `function_app.py` (with `active` filter)
 
 **Checkpoint**: US1 + US2 both work independently.
 
