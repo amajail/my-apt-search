@@ -48,8 +48,9 @@ Handoff note so we can pick this up fresh and **iterate one step at a time**
 ## Step-by-step (one per session)
 1. [x] `/speckit.constitution` — DONE: `.specify/memory/constitution.md` v1.0.0
        (5 principles + tech constraints + workflow). Review when back.
-2. [ ] `/speckit.specify` — P1 "Villa Urquiza daily monitor via MercadoLibre"
-       (tech-agnostic: user stories, FR-xxx, key entities, SC-xxx). Review.
+2. [x] `/speckit.specify` — DONE: `specs/001-villa-urquiza-monitor/spec.md`
+       (3 user stories P1/P2/P3, FR-001..011, key entities, SC-001..006).
+       Quality checklist passes. Review when back.
 3. [ ] `/speckit.plan` — P1 stack (Python, Azure Functions, Table Storage),
        architecture, and the `contracts/` Collector interface + common model.
 4. [ ] `/speckit.tasks` — P1 task list. Review.
