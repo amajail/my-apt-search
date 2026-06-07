@@ -24,9 +24,9 @@ story (e.g. the two-day diff). Test tasks are written before their implementatio
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Create project structure per plan.md: `function_app.py`, `host.json`, `requirements.txt`, `local.settings.json.example`, `src/`, `src/collectors/`, `src/pipeline/`, `src/storage/`, `src/profiles/`, `tests/{contract,integration,unit}/`
-- [ ] T002 Populate `requirements.txt` (azure-functions, azure-data-tables, httpx, pydantic, pyyaml; dev: pytest, pytest-asyncio) and install into `.venv`
-- [ ] T003 [P] Configure tooling: `pytest.ini` (test paths + markers), ruff/black config, and `local.settings.json.example` with `AzureWebJobsStorage=UseDevelopmentStorage=true` + `ML_CLIENT_ID`/`ML_CLIENT_SECRET` placeholders
+- [x] T001 Create project structure per plan.md: `function_app.py`, `host.json`, `requirements.txt`, `local.settings.json.example`, `src/`, `src/collectors/`, `src/pipeline/`, `src/storage/`, `src/profiles/`, `tests/{contract,integration,unit}/`
+- [x] T002 Populate `requirements.txt` (azure-functions, azure-data-tables, httpx, pydantic, pyyaml; dev: pytest, pytest-asyncio) and install into `.venv`
+- [x] T003 [P] Configure tooling: `pytest.ini` (test paths + markers), ruff/black config, and `local.settings.json.example` with `AzureWebJobsStorage=UseDevelopmentStorage=true` + `ML_CLIENT_ID`/`ML_CLIENT_SECRET` placeholders
 
 ---
 
@@ -34,14 +34,14 @@ story (e.g. the two-day diff). Test tasks are written before their implementatio
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T004 [P] Common model in `src/models.py`: `Listing`, `ChangeEvent`, `SearchProfile`, `Capabilities`, `Visits`, `ListingRef` (pydantic) per data-model.md — `Listing.url` required; enums for operation/currency/status/change-type
-- [ ] T005 [P] Settings loader in `src/config.py`: storage connection string + ML credentials from environment
-- [ ] T006 [P] `Collector` interface (Protocol) in `src/collectors/base.py`: `name`, `capabilities`, `search`, `get_item`, `get_visits` — **no source code here** (the port)
-- [ ] T007 Collector registry in `src/collectors/registry.py`: `get_collector(name)` mapping source name → adapter factory
-- [ ] T008 Storage wrapper in `src/storage/tables.py`: ensure tables; `upsert_listing`, `query_active_listings(profile)`, `append_change`, `get_changes_since(profile, since)` with the keys from data-model.md
-- [ ] T009 [P] Profile loader in `src/profiles.py` + `src/profiles/villa_urquiza.yaml` (venta, USD-only, price_max 115000, rooms exactly 2, min covered area 40, barrio location IDs for Villa Urquiza/Villa Ortúzar/Coghlan as TODO placeholders + name comments)
-- [ ] T010 [P] `FakeCollector` test double in `tests/contract/fake_collector.py`: configurable refs/items/visits and capabilities (drives contract + capability-gap tests)
-- [ ] T011 Azure Functions skeleton in `function_app.py` + `host.json`: empty timer-trigger and http-trigger stubs that import the app cleanly
+- [x] T004 [P] Common model in `src/models.py`: `Listing`, `ChangeEvent`, `SearchProfile`, `Capabilities`, `Visits`, `ListingRef` (pydantic) per data-model.md — `Listing.url` required; enums for operation/currency/status/change-type
+- [x] T005 [P] Settings loader in `src/config.py`: storage connection string + ML credentials from environment
+- [x] T006 [P] `Collector` interface (Protocol) in `src/collectors/base.py`: `name`, `capabilities`, `search`, `get_item`, `get_visits` — **no source code here** (the port)
+- [x] T007 Collector registry in `src/collectors/registry.py`: `get_collector(name)` mapping source name → adapter factory
+- [x] T008 Storage wrapper in `src/storage/tables.py`: ensure tables; `upsert_listing`, `query_active_listings(profile)`, `append_change`, `get_changes_since(profile, since)` with the keys from data-model.md
+- [x] T009 [P] Profile loader in `src/profiles.py` + `src/profiles/villa_urquiza.yaml` (venta, USD-only, price_max 115000, rooms exactly 2, min covered area 40, barrio location IDs for Villa Urquiza/Villa Ortúzar/Coghlan as TODO placeholders + name comments)
+- [x] T010 [P] `FakeCollector` test double in `tests/contract/fake_collector.py`: configurable refs/items/visits and capabilities (drives contract + capability-gap tests)
+- [x] T011 Azure Functions skeleton in `function_app.py` + `host.json`: empty timer-trigger and http-trigger stubs that import the app cleanly
 
 **Checkpoint**: Foundation ready — user stories can begin.
 
