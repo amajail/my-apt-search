@@ -110,13 +110,13 @@ no cross-contamination.
 
 ### Tests for User Story 3 (write first)
 
-- [ ] T031 [P] [US3] Integration test in `tests/integration/test_multi_profile.py` (Azurite): two profiles, separate digests/listings, no bleed
+- [x] T031 [P] [US3] Integration test in `tests/integration/test_multi_profile.py` (Azurite): two profiles, separate digests/listings, no bleed
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Multi-profile loading in `src/profiles.py`; iterate all profiles in the timer trigger / `pipeline.run`
-- [ ] T033 [P] [US3] Add a second example profile in `src/profiles/` to exercise isolation
-- [ ] T034 [US3] `GET /api/profiles` HTTP trigger in `function_app.py`
+- [x] T032 [US3] Multi-profile loading in `src/profiles.py`; iterate all profiles in the timer trigger / `pipeline.run`
+- [x] T033 [P] [US3] Add a second example profile in `src/profiles/` to exercise isolation
+- [x] T034 [US3] `GET /api/profiles` HTTP trigger in `function_app.py`
 
 **Checkpoint**: all stories independently functional.
 

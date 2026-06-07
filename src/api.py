@@ -69,6 +69,10 @@ def changes_payload(storage, profile: str, since: datetime) -> dict[str, Any]:
     }
 
 
+def profiles_payload(names: list[str]) -> dict[str, Any]:
+    return {"profiles": sorted(names)}
+
+
 def listings_payload(storage, profile: str, active: bool = True) -> dict[str, Any]:
     listings = (
         storage.query_active_listings(profile) if active else storage.get_listings(profile)

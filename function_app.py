@@ -12,7 +12,7 @@ import logging
 
 import azure.functions as func
 
-from src.api import changes_payload, listings_payload
+from src.api import changes_payload, listings_payload, profiles_payload
 from src.config import load_settings
 from src.pipeline.run import run_profile_for_source
 from src.profiles import load_all_profiles
@@ -72,3 +72,10 @@ def get_listings(req: func.HttpRequest) -> func.HttpResponse:
     active = req.params.get("active", "true").lower() != "false"
     payload = listings_payload(_storage(), profile, active=active)
     return func.HttpResponse(json.dumps(payload), mimetype="application/json")
+
+
+@app.route(route="profiles", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
+def get_profiles(req: func.HttpRequest) -> func.HttpResponse:  # noqa: ARG001
+    """T034 (US3): GET /api/profiles — the configured search profiles."""
+    names = [p.name for p in load_all_profiles()]
+    return func.HttpResponse(json.dumps(profiles_payload(names)), mimetype="application/json")
