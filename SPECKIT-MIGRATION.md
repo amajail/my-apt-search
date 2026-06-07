@@ -57,7 +57,8 @@ Handoff note so we can pick this up fresh and **iterate one step at a time**
 3. [x] `/speckit.plan` — DONE: `specs/001-villa-urquiza-monitor/plan.md` +
        research.md, data-model.md, contracts/{collector,api}.md, quickstart.md.
        Constitution Check passes. `docs/ARCHITECTURE.md` now absorbed here.
-4. [ ] `/speckit.tasks` — P1 task list. Review.
+4. [x] `/speckit.tasks` — DONE: `specs/001-villa-urquiza-monitor/tasks.md`
+       (T001–T039; Setup, Foundational, US1 MVP, US2, US3, Polish; tests included).
 5. [ ] `/speckit.implement` — build P1 incrementally (core w/ fake adapter first).
 6. [ ] Remove `docs/` once P1 spec+plan absorb it (keep README as index).
 7. [ ] Later: `/speckit.specify` P2 "Zonaprop source", then plan/tasks/implement.
