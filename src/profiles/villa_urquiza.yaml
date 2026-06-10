@@ -1,0 +1,11 @@
+name: villa_urquiza
+source: mercadolibre
+operation: venta
+currency: USD          # USD-only; ARS-priced listings are ignored (no conversion)
+price_max: 115000      # USD ceiling
+rooms: 2               # exactly 2 ambientes
+min_area_m2: 40        # covered area (superficie cubierta), matched strictly greater-than
+neighborhoods:         # MercadoLibre location IDs — TODO(T020): resolve real IDs
+  - "TODO_VILLA_URQUIZA_ID"   # Villa Urquiza
+  - "TODO_VILLA_ORTUZAR_ID"   # Villa Ortúzar
+  - "TODO_COGHLAN_ID"         # Coghlan

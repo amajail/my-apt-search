@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Azure Functions
+local.settings.json
+bin/
+obj/
+.python_packages/
+
+# Azurite (local Table emulator)
+__azurite_db*__.json
+__blobstorage__/
+__queuestorage__/

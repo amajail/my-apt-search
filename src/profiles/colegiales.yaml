@@ -1,0 +1,11 @@
+# EXAMPLE second profile — demonstrates multi-profile support (US3).
+# Delete this file if you don't want Colegiales monitored in production.
+name: colegiales
+source: mercadolibre
+operation: venta
+currency: USD          # USD-only
+price_max: 130000      # USD ceiling
+rooms: 3               # exactly 3 ambientes
+min_area_m2: 50        # covered area, strictly greater-than
+neighborhoods:         # MercadoLibre location IDs — TODO: resolve real IDs
+  - "TODO_COLEGIALES_ID"   # Colegiales
