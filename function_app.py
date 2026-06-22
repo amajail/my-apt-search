@@ -19,7 +19,9 @@ from src.profiles import load_all_profiles
 from src.storage.tables import Storage
 
 # Composition root: import adapters here so they self-register with the registry.
-# Uncomment when the MercadoLibre adapter (T021) lands on the feature branch:
+import src.collectors.argenprop  # noqa: F401  (MVP source — MercadoLibre is walled)
+# MercadoLibre is blocked (API 403 PolicyAgent; see source-access-blocker.md); its OAuth
+# layer (T019) exists but search/get_item are unavailable, so it is not wired in:
 # import src.collectors.mercadolibre  # noqa: F401
 
 app = func.FunctionApp()
