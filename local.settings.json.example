@@ -1,6 +1,7 @@
 {
   "IsEncrypted": false,
   "Values": {
+    "_comment_AzureWebJobsStorage": "Azurite default is for tests only (ephemeral). The local daily runner (scripts/run_daily.py) needs DURABLE storage for the diff to be meaningful — put a real Azure Storage connection string in ~/.config/apt-monitor.env (AzureWebJobsStorage=...), which the runner auto-loads.",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "python",
     "ML_CLIENT_ID": "",

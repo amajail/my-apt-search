@@ -1,11 +1,15 @@
 name: villa_urquiza
-source: argenprop       # MercadoLibre is walled (see source-access-blocker.md); Argenprop is the MVP source
+source: zonaprop
 operation: venta
 currency: USD          # USD-only; ARS-priced listings are ignored (no conversion)
 price_max: 115000      # USD ceiling
 rooms: 2               # exactly 2 ambientes
 min_area_m2: 40        # covered area (superficie cubierta), matched strictly greater-than
-neighborhoods:         # Argenprop barrio slugs (joined with "-o-" in the search URL)
-  - "villa-urquiza"    # Villa Urquiza (idbarrio 39)
-  - "villa-ortuzar"    # Villa Ortúzar
-  - "coghlan"          # Coghlan
+neighborhoods:         # descriptive only — the zonaprop adapter filters via search_url
+  - "Villa Urquiza"
+  - "Saavedra"
+  - "Villa Pueyrredón"
+# The user's saved Zonaprop search. The adapter fetches this verbatim (it encodes balcony,
+# 1 dormitorio / 2 ambientes, +40 m² cubiertos, ≤20 años, ≤USD 115.000, ordered by newest)
+# and follows pagination; price/area filters above are applied as defense-in-depth.
+search_url: "https://www.zonaprop.com.ar/departamentos-venta-villa-urquiza-saavedra-villa-pueyrredon-con-balcon-1-habitacion-2-ambientes-mas-40-m2-cubiertos-hasta-20-anos-menos-115000-dolar-orden-publicado-descendente.html"

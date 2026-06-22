@@ -1,0 +1,10 @@
+# Dependencies for running the monitor LOCALLY (scripts/run_daily.py), NOT for the Azure
+# Functions deploy. The Zonaprop adapter clears Cloudflare via curl_cffi's browser TLS
+# fingerprint; this can't run on the Functions consumption plan, so it lives here rather
+# than in requirements.txt.
+-r requirements.txt
+curl_cffi
+# playwright + playwright-stealth are an OPTIONAL fallback fetcher if curl_cffi stops
+# clearing Cloudflare; uncomment and run `playwright install chromium` if needed.
+# playwright
+# playwright-stealth

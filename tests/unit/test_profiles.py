@@ -8,10 +8,11 @@ from src.profiles import load_all_profiles, load_profile
 
 def test_load_villa_urquiza_profile():
     p = load_profile("villa_urquiza")
-    assert p.source == "argenprop"  # source switched from walled MercadoLibre (see source-access-blocker.md)
+    assert p.source == "zonaprop"
     assert p.operation == Operation.venta and p.currency == Currency.USD
     assert p.rooms == 2 and p.price_max == 115000 and p.min_area_m2 == 40
     assert len(p.neighborhoods) == 3
+    assert p.search_url and "zonaprop.com.ar" in p.search_url
 
 
 def test_load_all_profiles_returns_multiple():
