@@ -79,6 +79,10 @@ class SearchProfile(BaseModel):
     rooms: int = Field(gt=0)           # exact match
     min_area_m2: int = Field(gt=0)     # covered area, matched strictly greater-than
     neighborhoods: list[str] = Field(min_length=1)
+    # Some adapters (e.g. zonaprop) are driven by the source's own saved-search URL whose
+    # filters the structured fields above can't fully express; URL-based adapters read this
+    # verbatim, slug-based adapters (e.g. argenprop) ignore it.
+    search_url: Optional[str] = None
 
 
 class Listing(BaseModel):
