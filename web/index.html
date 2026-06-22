@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Apartment Monitor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>🏠 Apartment Monitor</h1>
+    <div class="meta">
+      <label>Profile
+        <select id="profile-select"></select>
+      </label>
+      <span id="updated" class="updated"></span>
+      <a id="source-link" class="source-link" target="_blank" rel="noopener" hidden>View source search ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <section id="summary" class="summary" aria-live="polite"></section>
+
+    <section id="changes-section" class="changes" hidden>
+      <h2>Recent changes <span class="hint">(last 30 days)</span></h2>
+      <ul id="changes-list" class="changes-list"></ul>
+    </section>
+
+    <section class="listings">
+      <div class="filters">
+        <label>Neighborhood
+          <select id="filter-neighborhood"><option value="">All</option></select>
+        </label>
+        <label>Max price (USD)
+          <input id="filter-maxprice" type="number" min="0" step="1000" placeholder="any" />
+        </label>
+        <span id="result-count" class="result-count"></span>
+      </div>
+
+      <table id="listings-table">
+        <thead>
+          <tr>
+            <th data-sort="idx" class="num">#</th>
+            <th data-sort="price" class="num">Price (USD)</th>
+            <th data-sort="rooms" class="num">Amb</th>
+            <th data-sort="area_m2" class="num">m²</th>
+            <th data-sort="days_listed" class="num">Days</th>
+            <th data-sort="neighborhood">Neighborhood</th>
+            <th data-sort="title">Title</th>
+          </tr>
+        </thead>
+        <tbody id="listings-body"></tbody>
+      </table>
+    </section>
+
+    <p id="status-msg" class="status-msg">Loading…</p>
+  </main>
+
+  <footer class="site-footer">
+    Static snapshot · data from the daily monitor · prices are public Zonaprop listings.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
