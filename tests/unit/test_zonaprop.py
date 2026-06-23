@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -18,6 +18,8 @@ from src.collectors import registry
 from src.collectors.base import Collector
 from src.collectors.zonaprop import (
     ZonapropCollector,
+    _antiquity_to_days,
+    _parse_modified_date,
     extract_preloaded_state,
     parse_page,
 )
@@ -151,16 +153,73 @@ def test_parse_page_maps_real_listings():
 
 
 def test_parse_page_populates_a_known_listing():
-    listings, _ = parse_page(_fixture("search_villa_urquiza.html"), _profile())
+    now = datetime(2026, 6, 21, 12, 0, tzinfo=timezone.utc)  # fixtures captured 2026-06-21
+    listings, _ = parse_page(_fixture("search_villa_urquiza.html"), _profile(), now=now)
     by_id = {l.source_id: l for l in listings}
     l = by_id["59422589"]
     assert l.price == 104800
     assert l.rooms == 2
     assert l.area_m2 == 42  # covered area (CFT101), not total (46)
     assert l.neighborhood == "Villa Urquiza"
+    # age comes from antiquity "Publicado hace 2 días" -> midnight(now) - 2d (NOT datePosted)
     assert l.listing_started_at == datetime(2026, 6, 19, tzinfo=timezone.utc)
+    # re-bump date kept separately, from modified_date
+    assert l.last_bumped_at == _parse_modified_date("2026-06-19T00:00:00-0400")
     assert l.photo_url and l.photo_url.startswith("https://")
     assert l.title
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("Publicado hace 18 días", 18),
+        ("Publicado hace 1 día", 1),
+        ("Publicado hace más de 1 año", 365),
+        ("Publicado hace 2 meses", 60),
+        ("Publicado hace 3 semanas", 21),
+        ("Publicado hace 5 horas", 0),
+        ("Publicado hoy", 0),
+        ("Publicado ayer", 1),
+        ("Publicado hace un día", 1),
+        ("", None),
+        (None, None),
+        ("algo raro", None),
+    ],
+)
+def test_antiquity_to_days(text, expected):
+    assert _antiquity_to_days(text) == expected
+
+
+def test_parse_modified_date():
+    dt = _parse_modified_date("2026-06-23T14:51:12-0400")
+    assert dt is not None and dt.year == 2026 and dt.month == 6 and dt.day == 23
+    assert dt.utcoffset().total_seconds() == -4 * 3600
+    assert _parse_modified_date(None) is None
+    assert _parse_modified_date("not a date") is None
+
+
+def test_age_falls_back_to_date_posted_when_no_antiquity():
+    # A posting with NO antiquity string but a datePosted in the SEO block -> the parser
+    # falls back to datePosted for listing_started_at.
+    posting = _card("700", "2", 100000, "50")
+    posting.pop("antiquity", None)  # _card has none anyway; be explicit
+    state = {
+        "listStore": {
+            "listPostings": [posting],
+            "paging": {"pagesUrl": {"nextPage": None}},
+            "seoStructuredData": {
+                "realEstateListing": {
+                    "mainEntity": [
+                        {"url": "/x-700.html", "datePosted": "6/10/26"}
+                    ]
+                }
+            },
+        }
+    }
+    html = f"<html><script>window.__PRELOADED_STATE__ = {json.dumps(state)};</script></html>"
+    listings, _ = parse_page(html, _profile(), now=datetime(2026, 6, 21, tzinfo=timezone.utc))
+    assert listings[0].listing_started_at == datetime(2026, 6, 10, tzinfo=timezone.utc)
+    assert listings[0].last_bumped_at is None  # no modified_date on this card
 
 
 def test_parse_page_last_page_has_no_next():

@@ -51,6 +51,7 @@ def _listing_json(l: Listing) -> dict[str, Any]:
         "area_m2": l.area_m2,
         "status": l.status.value,
         "days_listed": l.days_listed,
+        "last_bumped_at": _date(l.last_bumped_at),
         "visits_total": l.visits_total,
         "visits_last7": l.visits_last7,
         "first_seen": _date(l.first_seen),
