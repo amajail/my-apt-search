@@ -40,6 +40,7 @@ if _ENV_FILE.is_file():
             _k, _v = _line.split("=", 1)
             os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
 
+import src.collectors.argenprop  # noqa: E402,F401  (self-registers "argenprop")
 import src.collectors.zonaprop  # noqa: E402,F401  (self-registers "zonaprop")
 from src.api import changes_payload, listings_payload  # noqa: E402
 from src.collectors import registry  # noqa: E402
