@@ -33,7 +33,7 @@ from __future__ import annotations
 import json
 import logging
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from src.collectors import registry
@@ -174,6 +174,54 @@ def _parse_date_posted(raw: Optional[str]) -> Optional[datetime]:
         return None
 
 
+# Unit word in the "Publicado hace …" string -> days multiplier. Checked in order; the
+# first whose stem matches wins (so "año" beats the default "día").
+_ANTIQUITY_UNITS = (
+    ("año", 365),
+    ("mes", 30),
+    ("semana", 7),
+    ("hora", 0),
+    ("minuto", 0),
+    ("día", 1),
+    ("dia", 1),
+)
+
+
+def _antiquity_to_days(raw: Optional[str]) -> Optional[int]:
+    """Convert Zonaprop's displayed publication age ('Publicado hace N días') to days.
+
+    This is the age the page shows the user — unlike datePosted/modified_date it is NOT
+    reset when a listing is re-bumped. Handles 'hoy'/'ayer', 'un/una' = 1, and the
+    'más de 1 año' variant. Returns None if no recognizable age is present.
+    """
+    if not raw:
+        return None
+    text = raw.strip().lower()
+    if "hoy" in text:
+        return 0
+    if "ayer" in text:
+        return 1
+    m = re.search(r"\b(\d+)\b", text)
+    n = int(m.group(1)) if m else (1 if re.search(r"\bun[ao]?\b", text) else None)
+    if n is None:
+        return None
+    for stem, mult in _ANTIQUITY_UNITS:
+        if stem in text:
+            return n * mult
+    return None  # a number but no recognized unit
+
+
+def _parse_modified_date(raw: Optional[str]) -> Optional[datetime]:
+    """Parse the posting's `modified_date` (the re-bump/refresh timestamp), e.g.
+    '2026-06-23T14:51:12-0400', into a tz-aware datetime. None if absent/invalid."""
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw)
+    except (ValueError, TypeError):
+        return None
+
+
 def _photo_url(posting: dict) -> Optional[str]:
     pics = (posting.get("visiblePictures") or {}).get("pictures") or []
     if not pics:
@@ -183,7 +231,7 @@ def _photo_url(posting: dict) -> Optional[str]:
 
 
 def _build_listing(
-    posting: dict, date_posted: Optional[str], *, base_url: str
+    posting: dict, date_posted: Optional[str], *, base_url: str, now: datetime
 ) -> Optional[Listing]:
     """Map one raw posting into the common model, or None if it has no canonical url."""
     source_id = str(posting.get("postingId") or "").strip()
@@ -198,6 +246,18 @@ def _build_listing(
     location = (posting.get("postingLocation") or {}).get("location") or {}
     title = (posting.get("title") or posting.get("generatedTitle") or "").strip()
 
+    # Age from the displayed "Publicado hace N días" (the page's own counter, immune to
+    # re-bumps). Fall back to datePosted only when that string is missing/unparseable.
+    age_days = _antiquity_to_days(posting.get("antiquity"))
+    if age_days is not None:
+        # Anchor to midnight of `now`'s day, not the exact instant: the pipeline recomputes
+        # days_listed = (its_now - listing_started_at).days with a `now` captured slightly
+        # earlier, so a same-instant anchor would floor to N-1. Midnight makes it exactly N.
+        midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        listing_started_at = midnight - timedelta(days=age_days)
+    else:
+        listing_started_at = _parse_date_posted(date_posted)
+
     return Listing(
         source="zonaprop",
         source_id=source_id,
@@ -210,7 +270,8 @@ def _build_listing(
         rooms=_to_int(_feature_value(posting, _F_ROOMS)),
         area_m2=_to_int(_feature_value(posting, _F_COVERED_AREA)),
         status=Status.active,
-        listing_started_at=_parse_date_posted(date_posted),
+        listing_started_at=listing_started_at,
+        last_bumped_at=_parse_modified_date(posting.get("modified_date")),
         age_years=_to_int(_feature_value(posting, _F_ANTIQUITY)),
         description=posting.get("descriptionNormalized") or None,
         photo_url=_photo_url(posting),
@@ -218,15 +279,21 @@ def _build_listing(
 
 
 def parse_page(
-    html: str, profile: SearchProfile, *, base_url: str = BASE_URL
+    html: str,
+    profile: SearchProfile,
+    *,
+    base_url: str = BASE_URL,
+    now: Optional[datetime] = None,
 ) -> tuple[list[Listing], Optional[str]]:
     """Parse one results page -> (matching listings, absolute next-page url or None).
 
     Applies the profile filters that defend against the URL drifting: USD currency (via
     `_build_listing`), price ceiling, and covered area STRICTLY greater than the floor.
+    `now` anchors the "Publicado hace N días" age (defaults to current UTC time).
     Raises ValueError if the embedded state is missing (a structural failure, not an
     empty result set) so the caller never treats a broken page as "zero listings".
     """
+    now = now or datetime.now(timezone.utc)
     state = extract_preloaded_state(html)
     if state is None:
         raise ValueError("zonaprop: no __PRELOADED_STATE__ in page")
@@ -237,7 +304,10 @@ def parse_page(
     listings: list[Listing] = []
     for posting in postings:
         listing = _build_listing(
-            posting, dmap.get(str(posting.get("postingId") or "")), base_url=base_url
+            posting,
+            dmap.get(str(posting.get("postingId") or "")),
+            base_url=base_url,
+            now=now,
         )
         if listing is None:
             continue

@@ -36,6 +36,19 @@ function fmtDate(iso) {
   return d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 }
 
+// Whole days between two ISO dates (b - a), or null if either is missing.
+function daysBetween(aISO, bISO) {
+  if (!aISO || !bISO) return null;
+  const ms = new Date(bISO) - new Date(aISO);
+  if (Number.isNaN(ms)) return null;
+  return Math.max(0, Math.floor(ms / 86400000));
+}
+
+function fmtBumped(days) {
+  if (days == null) return "—";
+  return days === 0 ? "today" : `${days}d`;
+}
+
 // ---- changes panel ----------------------------------------------------------
 
 const CHANGE_META = {
@@ -146,6 +159,7 @@ function renderTable() {
         <td class="num">${l.rooms ?? "?"}</td>
         <td class="num">${l.area_m2 ?? "?"}</td>
         <td class="num">${l.days_listed ?? "?"}</td>
+        <td class="num">${fmtBumped(l.bumped_days)}</td>
         <td>${esc(l.neighborhood)}</td>
         <td><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a></td>
       </tr>`
@@ -181,6 +195,11 @@ async function loadProfile(name) {
   setStatus("Loading " + name + "…");
   try {
     const doc = await getJSON(`data/${encodeURIComponent(name)}.json`);
+    // Precompute "days since last bump" against the snapshot date, so the column is
+    // sortable and stable to the data (not the viewer's clock).
+    for (const l of doc.listings) {
+      l.bumped_days = daysBetween(l.last_bumped_at, doc.generated_at);
+    }
     state.profile = name;
     state.doc = doc;
     renderSummary(doc);

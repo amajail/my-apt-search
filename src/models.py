@@ -103,6 +103,7 @@ class Listing(BaseModel):
     # aging
     listing_started_at: Optional[datetime] = None  # from source; null -> use first_seen
     days_listed: Optional[int] = None              # derived at enrich time
+    last_bumped_at: Optional[datetime] = None      # source re-publish/refresh date (descriptive)
 
     # views (null when the source does not provide them)
     visits_total: Optional[int] = None
