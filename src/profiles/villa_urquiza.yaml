@@ -10,6 +10,6 @@ neighborhoods:         # descriptive only — the zonaprop adapter filters via s
   - "Saavedra"
   - "Villa Pueyrredón"
 # The user's saved Zonaprop search. The adapter fetches this verbatim (it encodes balcony,
-# 1 dormitorio / 2 ambientes, +40 m² cubiertos, ≤20 años, ≤USD 115.000, ordered by newest)
+# 1 dormitorio / 2 ambientes, +40 m² cubiertos, ≤20 años, USD 99k–115k, ordered by newest)
 # and follows pagination; price/area filters above are applied as defense-in-depth.
-search_url: "https://www.zonaprop.com.ar/departamentos-venta-villa-urquiza-saavedra-villa-pueyrredon-con-balcon-1-habitacion-2-ambientes-mas-40-m2-cubiertos-hasta-20-anos-menos-115000-dolar-orden-publicado-descendente.html"
+search_url: "https://www.zonaprop.com.ar/departamentos-venta-villa-urquiza-saavedra-villa-pueyrredon-con-balcon-1-habitacion-2-ambientes-mas-40-m2-cubiertos-hasta-20-anos-99000-115000-dolar-orden-publicado-descendente.html"
