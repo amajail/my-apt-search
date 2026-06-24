@@ -158,6 +158,7 @@ function renderTable() {
         <td class="num">${fmtUSD(l.price)}</td>
         <td class="num">${l.rooms ?? "?"}</td>
         <td class="num">${l.area_m2 ?? "?"}</td>
+        <td class="num">${l.price_per_m2 != null ? fmtUSD(l.price_per_m2) : "—"}</td>
         <td class="num">${l.days_listed ?? "?"}</td>
         <td class="num">${fmtBumped(l.bumped_days)}</td>
         <td>${esc(l.neighborhood)}</td>
@@ -199,6 +200,7 @@ async function loadProfile(name) {
     // sortable and stable to the data (not the viewer's clock).
     for (const l of doc.listings) {
       l.bumped_days = daysBetween(l.last_bumped_at, doc.generated_at);
+      l.price_per_m2 = l.area_m2 ? Math.round(l.price / l.area_m2) : null;
     }
     state.profile = name;
     state.doc = doc;
